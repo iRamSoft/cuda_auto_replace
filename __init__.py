@@ -9,24 +9,27 @@ if os.path.isfile(ini0) and not os.path.isfile(ini):
     shutil.copyfile(ini0, ini)
 
 #-------options-------
-opt_allow_lexers = ini_read(ini, 'op', 'lexers', '').lower().split(',')      
+opt_allow_lexers = ini_read(ini, 'op', 'lexers', '*').lower().split(',')      
 #---------------------
+bad_chars = '~"#%&*:<>?/\\{|}.'
+good_chars = '________________' 
+
  
 def is_name_listed(name, namelist):
     if not namelist: return True
     return bool(name) and (','+name+',' in ','+namelist+',')
     
 def get_lexer_dir(lex):
-    bad_chars = '~"#%&*:<>?/\\{|}.'
-    good_chars = '________________'           
-
     trantab = str.maketrans(bad_chars, good_chars)
 
     return lex.translate(trantab)
 
+def is_for_all_lexers():
+    return opt_allow_lexers == [''] or opt_allow_lexers == ['*']
+
 def _checks(ed_self):
     lexer = ed_self.get_prop(PROP_LEXER_CARET).lower()
-    if lexer not in opt_allow_lexers: return 
+    if lexer not in opt_allow_lexers and not is_for_all_lexers(): return 
         
     carets = ed_self.get_carets()
     if len(carets)!=1: return
@@ -38,8 +41,13 @@ class Command:
 
     def do_load_snippets(self):     
         snips = []
-        for lex in opt_allow_lexers:
-            dir = os.path.join(app_path(APP_DIR_DATA), 'autoreplace', get_lexer_dir(lex))
+        if is_for_all_lexers():
+            lexers_all = lexer_proc(LEXER_GET_LEXERS, True)
+        else:
+            lexers_all = opt_allow_lexers
+        
+        for lex in lexers_all:
+            dir = os.path.join(app_path(APP_DIR_DATA), 'autoreplace', get_lexer_dir(lex.lower()))
             snips.extend(get_snip_list_of_dicts(dir))
 
         lexers = []
@@ -48,19 +56,19 @@ class Command:
             if s:
                 lexers += s.split(',')  
         lexers = sorted(list(set(lexers)))
-        print('AutoReplace works for lexers:', ', '.join(lexers))
+        print('Auto Replace works for lexers:', ', '.join(lexers))
 
 #       print('snips', snips)  
 
         self.snips_sort = {}
 
-        for lexer in opt_allow_lexers:
+        for lexer in lexers_all:
             _items = [
                 data for data in snips if
                 (data[SNIP_LEX]=='') or
-                is_name_listed(lexer, data[SNIP_LEX].lower())
+                is_name_listed(lexer.lower(), data[SNIP_LEX].lower())
                 ]
-            self.snips_sort[lexer] = _items
+            self.snips_sort[lexer.lower()] = _items
 
 #       print('init', _items)   
 
@@ -90,7 +98,7 @@ class Command:
         word = get_last_word_from_editor(ed_self, text)
 #       print('word', word)
         rp_text = self.get_item_for_replace(word) 
-
+#       print('rp_text', rp_text) 
         if not rp_text: return
 
         x0, y0, x1, y1 = ed_self.get_carets()[0] 
