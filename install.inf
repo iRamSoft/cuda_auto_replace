@@ -1,9 +1,9 @@
 [info]
-title=AutoReplace
-desc=Supports snippets from SynWrite (snippets are expanded by Tab key or can be called in menu)
+title=Auto Replace
+desc=Auto Replace plugin for CudaText
 type=cudatext-plugin
-subdir=cuda_autoreplace
-homepage=https://github.com/CudaText-addons/cuda_snippets
+subdir=cuda_auto_replace
+homepage=https://github.com/iRamSoft/cuda_auto_replace
 
 [item1]
 section=events
@@ -19,6 +19,6 @@ events=on_change
 
 [item4]
 section=commands
-caption=AutoReplace\Config
+caption=Auto Replace\Config
 method=config
 menu=o
