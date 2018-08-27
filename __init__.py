@@ -2,7 +2,7 @@ import shutil
 from cudatext import *
 from .proc_snip import *
                     
-ini = os.path.join(app_path(APP_DIR_SETTINGS), 'cuda_autoreplace.ini')
+ini = os.path.join(app_path(APP_DIR_SETTINGS), 'cuda_auto_replace.ini')
 ini0 = os.path.join(os.path.dirname(__file__), 'settings.sample.ini')
 
 if os.path.isfile(ini0) and not os.path.isfile(ini):
