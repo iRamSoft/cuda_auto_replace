@@ -16,7 +16,7 @@ def isword(s):
     return s.isalnum() or s=='_'
 
 def get_word(ed, x, y):
-    if x==0: return
+    if x==0: return None, 0, 0
 
     x0 = x
     while (x0>0) and isword(ed.get_text_substr(x0-1, y, x0, y)):
@@ -28,7 +28,7 @@ def get_word(ed, x, y):
         x0+=1
     text2 = ed.get_text_substr(x, y, x0, y)
 
-    return text1 + text2
+    return text1 + text2, len(text1), len(text2)
 
 def _curent_word():
     s = ed.get_text_sel()
@@ -63,7 +63,10 @@ def get_last_word_from_editor(ed, char):
     
 def get_changed_word_from_editor(ed):
     x0, y0, x1, y1 = ed.get_carets()[0]
-    return get_word(ed, x0, y0)
+    word, len0, len2 = get_word(ed, x0, y0)
+       
+    if len2 == 0: return None, 0, 0
+    return word, len0, len2
 
 
 def get_snip_list_of_dicts(dir):

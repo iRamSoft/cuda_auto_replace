@@ -78,13 +78,13 @@ class Command:
         return items[0][SNIP_TEXT][0] 
 
     def replace_word_under_caret(self, ed_self):
-        word = get_changed_word_from_editor(ed_self)
+        word, len0, len1  = get_changed_word_from_editor(ed_self)
 #       print('word', word)
         rp_text = self.get_item_for_replace(word) 
 #       print('rp_text', rp_text) 
         if not rp_text: return  
         x0, y0, x1, y1 = ed_self.get_carets()[0] 
-        ed_self.replace(x0-len(word), y0, x0, y0, rp_text)
+        ed_self.replace(x0-len0, y0, x0+len1, y0, rp_text)
         
     def replace_last_word(self, ed_self, text):
         word = get_last_word_from_editor(ed_self, text)
