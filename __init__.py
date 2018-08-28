@@ -10,7 +10,8 @@ if os.path.isfile(ini0) and not os.path.isfile(ini):
 
 #-------options-------
 opt_allow_lexers_for_config = ini_read(ini, 'op', 'lexers', '*')
-opt_allow_lexers            = opt_allow_lexers_for_config.lower().split(',')
+opt_allow_lexers            = opt_allow_lexers_for_config.split(',')
+opt_allow_lexers_check      = opt_allow_lexers_for_config.lower().split(',')
 #---------------------
 bad_chars  = '~"#%&*:<>?/\\{|}.'
 good_chars = '________________' 
@@ -31,7 +32,7 @@ def _checks(ed_self):
     if is_for_all_lexers(): return True
 
     lexer = ed_self.get_prop(PROP_LEXER_FILE).lower() # _FILE works faster
-    if lexer not in opt_allow_lexers: return 
+    if lexer not in opt_allow_lexers_check: return 
         
     return True
     
@@ -49,8 +50,8 @@ class Command:
             lexers_all = opt_allow_lexers
         
         for lex in lexers_all:
-            dir = os.path.join(app_path(APP_DIR_DATA), 'autoreplace', get_lexer_dir(lex.lower()))
-            snips.extend(get_snip_list_of_dicts(dir))
+            dir = os.path.join(app_path(APP_DIR_DATA), 'autoreplace')
+            snips.extend(get_snip_list_of_dicts(dir, get_lexer_dir(lex.lower())))
 
         lexers = []
         for d in snips:
@@ -59,12 +60,8 @@ class Command:
                 lexers += s.split(',')  
         lexers = sorted(list(set(lexers)))
         
-        if is_for_all_lexers(): 
-            print('Auto Replace works for all lexers')
-        else:
-            print('Auto Replace works for lexers:', ', '.join(lexers))
-
-#       print('snips', snips)  
+        lexers_ex = [lexer for lexer in lexers_all
+                     if lexer.lower() in lexers]
 
         self.snips_sort = {}
 
@@ -76,7 +73,12 @@ class Command:
                 ]
             self.snips_sort[lexer.lower()] = _items
 
-#       print('init', _items)   
+        msgs = ['{}[{}]'.format(lexer, len(self.snips_sort.get(lexers[0].lower(), []))) for lexer in lexers_ex]
+        
+        if is_for_all_lexers(): 
+            print('Auto Replace: for all lexers, found:', ', '.join(msgs))
+        else:
+            print('Auto Replace: works for lexers:', ', '.join(msgs))
 
     def get_snip_list_current(self):
         lexer = ed.get_prop(PROP_LEXER_CARET).lower()
@@ -139,6 +141,7 @@ class Command:
     def config(self):
         global opt_allow_lexers 
         global opt_allow_lexers_for_config
+        global opt_allow_lexers_check
         
         res = dlg_input('Allowed lexers (comma-separated list, or "*" for all):', 
             opt_allow_lexers_for_config)
@@ -150,7 +153,8 @@ class Command:
         ini_write(ini, 'op', 'lexers', res)
         
         opt_allow_lexers_for_config = res
-        opt_allow_lexers            = opt_allow_lexers_for_config.lower().split(',')    
+        opt_allow_lexers            = opt_allow_lexers_for_config.split(',')    
+        opt_allow_lexers_check      = opt_allow_lexers_for_config.lower().split(',')
         
         if is_for_all_lexers(): 
             msg = 'Auto Replace now works for all lexers'
@@ -160,3 +164,5 @@ class Command:
             msg = 'Auto Replace now works for lexers: {}'.format(', '.join(res.split(',')))
             msg_status(msg)
             print(msg)
+            
+        self.do_load_snippets()            

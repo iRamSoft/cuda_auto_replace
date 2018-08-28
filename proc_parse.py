@@ -1,6 +1,6 @@
 import re
 
-def parse_snip_line(line):
+def parse_snip_line(line, lex):
     """ Parse one-line snippet definition
             [word ][/L="My Lexer"] [/N="My Name"] text text
         If word is omitted then /N= is required.
@@ -36,11 +36,11 @@ def parse_snip_line(line):
         return optv,line
                 
     name    = key
-    lex     = ''
+    lex_ex  = ''
     if line[:3]=='/N=':
         name,line   = opt_val(line, 'N', defv=key)
     if line[:3]=='/L=':
-        lex,line    = opt_val(line, 'L', defv='')
+        lex_ex,line = opt_val(line, 'L', defv='')
     if line[:3]=='/N=':
         name,line   = opt_val(line, 'N', defv=name)
 

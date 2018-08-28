@@ -72,9 +72,9 @@ def get_changed_word_from_editor(ed, caret=None):
     return word, len0, len2
 
 
-def get_snip_list_of_dicts(dir):
+def get_snip_list_of_dicts(dir, lex):
     res = []
-    for root, subdirs, files in os.walk(dir):
+    for root, subdirs, files in os.walk(os.path.join(dir, lex)):
         for f in files:
             if f.endswith(SNIP_EXT):
                 res.append(os.path.join(root, f))
@@ -83,7 +83,7 @@ def get_snip_list_of_dicts(dir):
     for fn in res:
         for line in open(fn, encoding='utf8'):
             if line.strip() and line[0] not in ('#', ' '):
-                parse_data = parse_snip_line(line)
+                parse_data = parse_snip_line(line, lex)
                 if parse_data:
                     result += [parse_data]
     
