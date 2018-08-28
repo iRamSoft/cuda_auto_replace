@@ -23,6 +23,6 @@ events=on_click
 
 [item5]
 section=commands
-caption=Auto Replace\Config
+caption=Auto Replace\Change lexers
 method=config
 menu=o

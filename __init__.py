@@ -125,4 +125,7 @@ class Command:
         pass
             
     def config(self):
-        file_open(ini)
+        res = dlg_input('Allowed lexers (comma-separated list, or "*" for all):', opt_allow_lexers_for_config)
+        if not res: return
+        ini_write(ini, 'op', 'lexers', res)
+ 
