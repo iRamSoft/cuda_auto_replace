@@ -15,9 +15,13 @@ events=on_change
 
 [item3]
 section=events
-events=on_change
+events=on_key
 
 [item4]
+section=events
+events=on_click
+
+[item5]
 section=commands
 caption=Auto Replace\Config
 method=config

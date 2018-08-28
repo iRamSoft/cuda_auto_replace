@@ -21,7 +21,6 @@ def is_name_listed(name, namelist):
     
 def get_lexer_dir(lex):
     trantab = str.maketrans(bad_chars, good_chars)
-
     return lex.translate(trantab)
 
 def is_for_all_lexers():
@@ -56,7 +55,11 @@ class Command:
             if s:
                 lexers += s.split(',')  
         lexers = sorted(list(set(lexers)))
-        print('Auto Replace works for lexers:', ', '.join(lexers))
+        
+        if is_for_all_lexers(): 
+            print('Auto Replace works for lexers:', ', '.join(lexers))
+        else:
+            print('Auto Replace works for lexers:', ', '.join(lexers))
 
 #       print('snips', snips)  
 
@@ -115,6 +118,9 @@ class Command:
         return
         
     def on_key(self, ed_self, key, state):
+        pass
+            
+    def on_click(self, ed_self, state):
         pass
             
     def config(self):
