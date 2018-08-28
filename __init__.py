@@ -9,18 +9,18 @@ if os.path.isfile(ini0) and not os.path.isfile(ini):
     shutil.copyfile(ini0, ini)
 
 #-------options-------
-opt_allow_lexers = ini_read(ini, 'op', 'lexers', '*').lower().split(',')      
+opt_allow_lexers_for_config = ini_read(ini, 'op', 'lexers', '*')
+opt_allow_lexers            =  opt_allow_lexers_for_config.lower().split(',')
 #---------------------
-bad_chars = '~"#%&*:<>?/\\{|}.'
+bad_chars  = '~"#%&*:<>?/\\{|}.'
 good_chars = '________________' 
-
+trantab    = str.maketrans(bad_chars, good_chars)
  
 def is_name_listed(name, namelist):
     if not namelist: return True
     return bool(name) and (','+name+',' in ','+namelist+',')
     
 def get_lexer_dir(lex):
-    trantab = str.maketrans(bad_chars, good_chars)
     return lex.translate(trantab)
 
 def is_for_all_lexers():
@@ -58,9 +58,9 @@ class Command:
         lexers = sorted(list(set(lexers)))
         
         if is_for_all_lexers(): 
-            print('Auto Replace works for lexers:', ', '.join(lexers))
-        else:
             print('Auto Replace works for all lexers')
+        else:
+            print('Auto Replace works for lexers:', ', '.join(lexers))
 
 #       print('snips', snips)  
 
