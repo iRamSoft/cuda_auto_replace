@@ -59,7 +59,7 @@ class Command:
         if is_for_all_lexers(): 
             print('Auto Replace works for lexers:', ', '.join(lexers))
         else:
-            print('Auto Replace works for lexers:', ', '.join(lexers))
+            print('Auto Replace works for all lexers')
 
 #       print('snips', snips)  
 
