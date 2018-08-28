@@ -1,6 +1,6 @@
 [info]
 title=Auto Replace
-desc=Auto Replace plugin for CudaText
+desc=Plugin auto-replaces currently typed words, based on set of snippets with such words.
 type=cudatext-plugin
 subdir=cuda_auto_replace
 homepage=https://github.com/iRamSoft/cuda_auto_replace
