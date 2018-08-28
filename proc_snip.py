@@ -61,11 +61,14 @@ def get_last_word_from_editor(ed, char):
     while (x>0) and (isword(line[x-1])): x-=1
     return line[x:x0]
     
-def get_changed_word_from_editor(ed):
-    x0, y0, x1, y1 = ed.get_carets()[0]
+def get_changed_word_from_editor(ed, caret=None):
+    if caret:
+        x0, y0, x1, y1 = caret
+    else:
+        x0, y0, x1, y1 = ed.get_carets()[0]
     word, len0, len2 = get_word(ed, x0, y0)
        
-    if len2 == 0: return None, 0, 0
+    if len2 == 0 and not caret: return None, 0, 0
     return word, len0, len2
 
 

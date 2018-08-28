@@ -10,7 +10,7 @@ if os.path.isfile(ini0) and not os.path.isfile(ini):
 
 #-------options-------
 opt_allow_lexers_for_config = ini_read(ini, 'op', 'lexers', '*')
-opt_allow_lexers            =  opt_allow_lexers_for_config.lower().split(',')
+opt_allow_lexers            = opt_allow_lexers_for_config.lower().split(',')
 #---------------------
 bad_chars  = '~"#%&*:<>?/\\{|}.'
 good_chars = '________________' 
@@ -36,6 +36,8 @@ def _checks(ed_self):
     return True
     
 class Command:
+    last_carret_pos = None   
+    
     def __init__(self):          
         self.do_load_snippets() 
 
@@ -89,13 +91,16 @@ class Command:
         if not items: return
         return items[0][SNIP_TEXT][0] 
 
-    def replace_word_under_caret(self, ed_self):
-        word, len0, len1  = get_changed_word_from_editor(ed_self)
+    def replace_word_under_caret(self, ed_self, caret=None):
+        word, len0, len1  = get_changed_word_from_editor(ed_self, caret)
 #       print('word', word)
         rp_text = self.get_item_for_replace(word) 
 #       print('rp_text', rp_text) 
         if not rp_text: return  
-        x0, y0, x1, y1 = ed_self.get_carets()[0] 
+        if not caret:
+            x0, y0, x1, y1 = ed_self.get_carets()[0]
+        else:
+            x0, y0, x1, y1 = caret     
         ed_self.replace(x0-len0, y0, x0+len1, y0, rp_text)
         
     def replace_last_word(self, ed_self, text):
@@ -111,21 +116,47 @@ class Command:
        
     def on_insert(self, ed_self, text):
         if not _checks(ed_self): return
+        self.last_carret_pos = ed_self.get_carets()[0]
         self.replace_last_word(ed_self, text)
         
     def on_change(self, ed_self):
         if not _checks(ed_self): return
         self.replace_word_under_caret(ed_self)
-        return
+        self.last_carret_pos = ed_self.get_carets()[0]        
         
     def on_key(self, ed_self, key, state):
-        pass
+        if key!=9 and key !=13: return #tab-key=9 enter=13
+        if state!='': return
+        if not _checks(ed_self): return
+        self.replace_word_under_caret(ed_self, self.last_carret_pos)        
             
     def on_click(self, ed_self, state):
-        pass
+        if not _checks(ed_self): return        
+        if self.last_carret_pos != ed_self.get_carets()[0]:
+            self.replace_word_under_caret(ed_self, self.last_carret_pos)
+        self.last_carret_pos = ed_self.get_carets()[0]        
             
     def config(self):
-        res = dlg_input('Allowed lexers (comma-separated list, or "*" for all):', opt_allow_lexers_for_config)
+        global opt_allow_lexers 
+        global opt_allow_lexers_for_config
+        
+        res = dlg_input('Allowed lexers (comma-separated list, or "*" for all):', 
+            opt_allow_lexers_for_config)
         if not res: return
+        if opt_allow_lexers == res.lower().split(','): 
+            msg_status('Auto Replace: List of lexers not changed')
+            return
+
         ini_write(ini, 'op', 'lexers', res)
- 
+        
+        opt_allow_lexers_for_config = res
+        opt_allow_lexers            = opt_allow_lexers_for_config.lower().split(',')    
+        
+        if is_for_all_lexers(): 
+            msg = 'Auto Replace now works for all lexers'
+            msg_status(msg)
+            print(msg)
+        else:
+            msg = 'Auto Replace now works for lexers: {}'.format(', '.join(res.split(',')))
+            msg_status(msg)
+            print(msg)
