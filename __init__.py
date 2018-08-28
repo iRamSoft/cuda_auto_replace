@@ -27,11 +27,12 @@ def is_for_all_lexers():
     return opt_allow_lexers == [''] or opt_allow_lexers == ['*']
 
 def _checks(ed_self):
-    lexer = ed_self.get_prop(PROP_LEXER_CARET).lower()
-    if lexer not in opt_allow_lexers and not is_for_all_lexers(): return 
+    if len(ed_self.get_carets())!=1: return
+    if is_for_all_lexers(): return True
+
+    lexer = ed_self.get_prop(PROP_LEXER_FILE).lower() # _FILE works faster
+    if lexer not in opt_allow_lexers: return 
         
-    carets = ed_self.get_carets()
-    if len(carets)!=1: return
     return True
     
 class Command:
