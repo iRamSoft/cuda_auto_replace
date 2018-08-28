@@ -73,8 +73,7 @@ class Command:
                 ]
             self.snips_sort[lexer.lower()] = _items
 
-        msgs = ['{}[{}]'.format(lexer, len(self.snips_sort.get(lexers[0].lower(), []))) for lexer in lexers_ex]
-        
+        msgs = ['{}[{}]'.format(lexer, len(self.snips_sort.get(lexer.lower(), []))) for lexer in lexers_ex]
         if is_for_all_lexers(): 
             print('Auto Replace: for all lexers, found:', ', '.join(msgs))
         else:
@@ -156,13 +155,4 @@ class Command:
         opt_allow_lexers            = opt_allow_lexers_for_config.split(',')    
         opt_allow_lexers_check      = opt_allow_lexers_for_config.lower().split(',')
         
-        if is_for_all_lexers(): 
-            msg = 'Auto Replace now works for all lexers'
-            msg_status(msg)
-            print(msg)
-        else:
-            msg = 'Auto Replace now works for lexers: {}'.format(', '.join(res.split(',')))
-            msg_status(msg)
-            print(msg)
-            
         self.do_load_snippets()            
