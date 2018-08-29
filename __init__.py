@@ -126,8 +126,8 @@ class Command:
         self.last_carret_pos = ed_self.get_carets()[0]        
         
     def on_key(self, ed_self, key, state):
-        
-        if key!=9 and key !=13: return #tab-key=9 enter=13
+        #Tab=9 Enter=13 PgUp=33 PgDn=34 End=35 Home=36
+        if key not in [9,13,33,34,35,36]: return
         if state!='': return
         if not _checks(ed_self): return
         if self.on_key_process: 
