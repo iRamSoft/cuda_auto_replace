@@ -38,6 +38,7 @@ def _checks(ed_self):
     
 class Command:
     last_carret_pos = None   
+    on_key_process  = False 
     
     def __init__(self):          
         self.do_load_snippets() 
@@ -114,7 +115,6 @@ class Command:
         x0, y0, x1, y1 = ed_self.get_carets()[0] 
         ed_self.replace(x0-len(word), y0, x0, y0, rp_text)
 
-       
     def on_insert(self, ed_self, text):
         if not _checks(ed_self): return
         self.last_carret_pos = ed_self.get_carets()[0]
@@ -126,10 +126,16 @@ class Command:
         self.last_carret_pos = ed_self.get_carets()[0]        
         
     def on_key(self, ed_self, key, state):
+        
         if key!=9 and key !=13: return #tab-key=9 enter=13
         if state!='': return
         if not _checks(ed_self): return
+        if self.on_key_process: 
+            print('Dbl on_key hooked!')
+            return
+        self.on_key_process = True
         self.replace_word_under_caret(ed_self, self.last_carret_pos)        
+        self.on_key_process = False
             
     def on_click(self, ed_self, state):
         if not _checks(ed_self): return        
