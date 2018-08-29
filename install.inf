@@ -7,21 +7,9 @@ homepage=https://github.com/iRamSoft/cuda_auto_replace
 
 [item1]
 section=events
-events=on_insert
+events=on_change,on_click,on_insert,on_key
 
 [item2]
-section=events
-events=on_change
-
-[item3]
-section=events
-events=on_key
-
-[item4]
-section=events
-events=on_click
-
-[item5]
 section=commands
 caption=Auto Replace\Change lexers
 method=config
