@@ -98,7 +98,7 @@ class Command:
         if no_snips:
             log_msg = 'Auto Replace: not found any snippets for work.'
         else:
-            msgs = ['{}[{}]'.format(lexer, len(self.snips_sort.get(lexer.lower(), []))) for lexer in lexers_ex]
+            msgs = ['{}[{}]'.format(lexer, self.snips_count.get(lexer.lower(), 0)) for lexer in lexers_ex]
             if is_for_all_lexers(): 
                 log_msg = 'Auto Replace: for all lexers, found: ' + ', '.join(msgs)
             else:
