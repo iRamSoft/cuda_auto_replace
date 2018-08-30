@@ -15,6 +15,8 @@ bad_chars  = '~"#%&*:<>?/\\{|}.'
 good_chars = '________________' 
 trantab    = str.maketrans(bad_chars, good_chars)
  
+no_snips   = True
+ 
 def is_name_listed(name, namelist):
     if not namelist: return True
     return bool(name) and (','+name+',' in ','+namelist+',')
@@ -25,12 +27,32 @@ def get_lexer_dir(lex):
 def is_for_all_lexers():
     return opt_allow_lexers == [''] or opt_allow_lexers == ['*']
 
-def _checks(ed_self):
+def is_not_a_comment(style):
+    return style.lower() not in ['string','comment']
+
+def _caret_in_comment(ed_self, caret):
+    if not caret: return False 
+    x0, y0, x1, y1 = caret
+    
+    tkn_list = ed_self.get_token(TOKEN_LIST_SUB, y0, y0)
+    if not tkn_list: return False    
+    for tkn in tkn_list:
+        if tkn['x1'] <= x0 <= tkn['x2']: 
+            return not is_not_a_comment(tkn['style'])
+
+def _checks(self, ed_self):    
+    if no_snips: return
     if len(ed_self.get_carets())!=1: return
     if is_for_all_lexers(): return True
 
     lexer = ed_self.get_prop(PROP_LEXER_FILE).lower() # _FILE works faster
+
     if lexer not in opt_allow_lexers_check: return 
+    if len(self.snips_sort.get(lexer.lower(), [])) == 0: return
+      
+    if _caret_in_comment(ed_self, self.last_carret_pos if self.last_carret_pos else ed_self.get_carets()[0]):
+        self.last_carret_pos = ed_self.get_carets()[0]
+        return  
         
     return True
     
@@ -42,6 +64,8 @@ class Command:
         self.do_load_snippets() 
 
     def do_load_snippets(self):     
+        global no_snips
+        
         snips = []
         if is_for_all_lexers():
             lexers_all = lexer_proc(LEXER_GET_LEXERS, True)
@@ -72,11 +96,19 @@ class Command:
                 ]
             self.snips_sort[lexer.lower()] = _items
 
+        no_snips = len(lexers_ex) == 0;
+
         msgs = ['{}[{}]'.format(lexer, len(self.snips_sort.get(lexer.lower(), []))) for lexer in lexers_ex]
-        if is_for_all_lexers(): 
-            print('Auto Replace: for all lexers, found:', ', '.join(msgs))
+
+        if no_snips:
+            log_msg = 'Auto Replace: not found any snippets for work.'
         else:
-            print('Auto Replace: works for lexers:', ', '.join(msgs))
+            if is_for_all_lexers(): 
+                log_msg = 'Auto Replace: for all lexers, found: ' + ', '.join(msgs)
+            else:
+                log_msg = 'Auto Replace: works for lexers: ' + ', '.join(msgs)
+            
+        print(log_msg)    
 
     def get_snip_list_current(self):
         lexer = ed.get_prop(PROP_LEXER_CARET).lower()
@@ -114,12 +146,12 @@ class Command:
         ed_self.replace(x0-len(word), y0, x0, y0, rp_text)
 
     def on_insert(self, ed_self, text):
-        if not _checks(ed_self): return
+        if not _checks(self, ed_self): return
         self.last_carret_pos = ed_self.get_carets()[0]
         self.replace_last_word(ed_self, text)
         
     def on_change(self, ed_self):
-        if not _checks(ed_self): return
+        if not _checks(self, ed_self): return
         self.replace_word_under_caret(ed_self)
         self.last_carret_pos = ed_self.get_carets()[0]        
         
@@ -127,7 +159,7 @@ class Command:
         #Tab=9 Enter=13 PgUp=33 PgDn=34 End=35 Home=36
         if key not in [9,13,33,34,35,36]: return
         if state!='': return
-        if not _checks(ed_self): return
+        if not _checks(self, ed_self): return
         if self.on_key_process: 
             print('Dbl on_key hooked!')
             return
@@ -136,7 +168,7 @@ class Command:
         self.on_key_process = False
             
     def on_click(self, ed_self, state):
-        if not _checks(ed_self): return        
+        if not _checks(self, ed_self): return        
         if self.last_carret_pos != ed_self.get_carets()[0]:
             self.replace_word_under_caret(ed_self, self.last_carret_pos)
         self.last_carret_pos = ed_self.get_carets()[0]        
@@ -160,3 +192,9 @@ class Command:
         opt_allow_lexers_check      = opt_allow_lexers_for_config.lower().split(',')
         
         self.do_load_snippets()            
+        
+    def reload_snips(self):
+        self.do_load_snippets()  
+       
+    def on_start(self, ed_self):
+        pass

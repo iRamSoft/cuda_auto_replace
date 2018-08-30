@@ -1,2 +1,13 @@
+- fix
++ add
+* enhancement
+
+2018.08.30
++ add ignore comments/string of lexer (https://github.com/iRamSoft/cuda_auto_replace/issues/19)
++ add reload snipps operation in config menu
+* check and load snipps on start CudaText
+* improved checking to start replacement operation
+* removed unnecessary actions, if for the lexer there are no snipps
+
 2018.08.29
 initial

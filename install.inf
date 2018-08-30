@@ -7,9 +7,15 @@ homepage=https://github.com/iRamSoft/cuda_auto_replace
 
 [item1]
 section=events
-events=on_change,on_click,on_insert,on_key
+events=on_change,on_click,on_insert,on_key,on_start
 
 [item2]
+section=commands
+caption=Auto Replace\Reload snips
+method=reload_snips
+menu=o
+
+[item3]
 section=commands
 caption=Auto Replace\Change lexers
 method=config
