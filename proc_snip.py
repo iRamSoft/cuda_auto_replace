@@ -1,16 +1,9 @@
 import sys
 import os
 import string
-from .proc_parse import parse_snip_line
-
-#CHARS_SNIP = string.ascii_letters + string.digits + '_.$'
 
 SNIP_EXT='.cuda-snips'
-
-SNIP_NAME='name'
-SNIP_ID='id'
-SNIP_LEX='lex'
-SNIP_TEXT='text'
+SNIP_LEX=2
 
 def isword(s):    
     return s.isalnum() or s=='_'
@@ -81,10 +74,11 @@ def get_snip_list_of_dicts(dir, lex):
 
     result = []
     for fn in res:
-        for line in open(fn, encoding='utf8'):
-            if line.strip() and line[0] not in ('#', ' '):
-                parse_data = parse_snip_line(line, lex)
-                if parse_data:
-                    result += [parse_data]
+        for s in open(fn, encoding='utf8').read().splitlines():
+            if s and s[0] not in ('#', ' '):
+                #print('s', '"'+s+'"')
+                w = s.split(' ')
+                if len(w)==2:
+                    result += [ (w[0], w[1], lex) ]
     
-    return sorted(result, key=lambda d: d[SNIP_NAME])
+    return sorted(result)
