@@ -55,4 +55,4 @@ def parse_snip_line(line, lex):
     if not body:
         return None
 
-    return {'id':key, 'name':name, 'lex':lex, 'text':body.splitlines() }
+    return {'id':key, 'name':name.lower(), 'lex':lex, 'text':body.splitlines()}

@@ -26,10 +26,10 @@ def get_lexer_dir(lex):
 def is_for_all_lexers():
     return opt_allow_lexers == [''] or opt_allow_lexers == ['*']
 
-def is_not_a_comment(style):
-    return style.lower() not in ['string','comment']
+def is_a_comment(style, c_styles):
+    return style.lower() in c_styles
 
-def _caret_in_comment(ed_self, caret):
+def _caret_in_comment(ed_self, c_styles, caret):
     if not caret: return False 
     x0, y0, x1, y1 = caret
     
@@ -37,7 +37,7 @@ def _caret_in_comment(ed_self, caret):
     if not tkn_list: return False    
     for tkn in tkn_list:
         if tkn['x1'] <= x0 <= tkn['x2']: 
-            return not is_not_a_comment(tkn['style'])
+            return is_a_comment(tkn['style'], c_styles)
 
 def _checks(self, ed_self):    
     if no_snips: return
@@ -46,7 +46,8 @@ def _checks(self, ed_self):
     lexer = ed_self.get_prop(PROP_LEXER_FILE).lower()       
     if self.snips_count.get(lexer.lower(), 0) == 0: return
       
-    if _caret_in_comment(ed_self, self.last_carret_pos if self.last_carret_pos else ed_self.get_carets()[0]):
+    if _caret_in_comment(ed_self, self.lexer_prop.get(lexer.lower(), []), 
+        self.last_carret_pos if self.last_carret_pos else ed_self.get_carets()[0]):
         self.last_carret_pos = ed_self.get_carets()[0]
         return  
         
@@ -93,7 +94,14 @@ class Command:
             self.snips_sort[lexer.lower()] = _items
             self.snips_count[lexer.lower()] = len(_items)
 
-        no_snips = len(lexers_ex) == 0;
+        no_snips = len(lexers_ex) == 0
+        
+        self.lexer_prop = {}
+        for lexer in lexers_ex:
+            props = lexer_proc(LEXER_GET_PROP, lexer)
+            s_c_list = [item.lower() for item in props['st_s']]
+            s_c_list.extend([item.lower() for item in props['st_c']])
+            self.lexer_prop[lexer.lower()] = s_c_list
 
         if no_snips:
             log_msg = 'Auto Replace: not found any snippets for work.'
@@ -113,9 +121,7 @@ class Command:
     def get_item_for_replace(self, word):
         if not word: return  
         items = self.get_snip_list_current() #leave snips for lexer
-#       print('items', items)
-        items = [i for i in items if i[SNIP_TEXT][0].lower()==word.lower() and i[SNIP_TEXT][0]!=word] #leave snips for name
-#       print('items', items) 
+        items = [i for i in items if i[SNIP_NAME]==word.lower() and i[SNIP_TEXT][0]!=word] #leave snips for name
         if not items: return
         return items[0][SNIP_TEXT][0] 
 
