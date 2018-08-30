@@ -9,7 +9,6 @@ if not os.path.isfile(ini):
 #-------options-------
 opt_allow_lexers_for_config = ini_read(ini, 'op', 'lexers', '*')
 opt_allow_lexers            = opt_allow_lexers_for_config.split(',')
-opt_allow_lexers_check      = opt_allow_lexers_for_config.lower().split(',')
 #---------------------
 bad_chars  = '~"#%&*:<>?/\\{|}.'
 good_chars = '________________' 
@@ -43,12 +42,9 @@ def _caret_in_comment(ed_self, caret):
 def _checks(self, ed_self):    
     if no_snips: return
     if len(ed_self.get_carets())!=1: return
-    if is_for_all_lexers(): return True
 
-    lexer = ed_self.get_prop(PROP_LEXER_FILE).lower() # _FILE works faster
-
-    if lexer not in opt_allow_lexers_check: return 
-    if len(self.snips_sort.get(lexer.lower(), [])) == 0: return
+    lexer = ed_self.get_prop(PROP_LEXER_FILE).lower()       
+    if self.snips_count.get(lexer.lower(), 0) == 0: return
       
     if _caret_in_comment(ed_self, self.last_carret_pos if self.last_carret_pos else ed_self.get_carets()[0]):
         self.last_carret_pos = ed_self.get_carets()[0]
@@ -87,7 +83,7 @@ class Command:
                      if lexer.lower() in lexers]
 
         self.snips_sort = {}
-
+        self.snips_count = {}
         for lexer in lexers_all:
             _items = [
                 data for data in snips if
@@ -95,14 +91,14 @@ class Command:
                 is_name_listed(lexer.lower(), data[SNIP_LEX].lower())
                 ]
             self.snips_sort[lexer.lower()] = _items
+            self.snips_count[lexer.lower()] = len(_items)
 
         no_snips = len(lexers_ex) == 0;
-
-        msgs = ['{}[{}]'.format(lexer, len(self.snips_sort.get(lexer.lower(), []))) for lexer in lexers_ex]
 
         if no_snips:
             log_msg = 'Auto Replace: not found any snippets for work.'
         else:
+            msgs = ['{}[{}]'.format(lexer, len(self.snips_sort.get(lexer.lower(), []))) for lexer in lexers_ex]
             if is_for_all_lexers(): 
                 log_msg = 'Auto Replace: for all lexers, found: ' + ', '.join(msgs)
             else:
@@ -176,7 +172,6 @@ class Command:
     def config(self):
         global opt_allow_lexers 
         global opt_allow_lexers_for_config
-        global opt_allow_lexers_check
         
         res = dlg_input('Allowed lexers (comma-separated list, or "*" for all):', 
             opt_allow_lexers_for_config)
@@ -189,7 +184,6 @@ class Command:
         
         opt_allow_lexers_for_config = res
         opt_allow_lexers            = opt_allow_lexers_for_config.split(',')    
-        opt_allow_lexers_check      = opt_allow_lexers_for_config.lower().split(',')
         
         self.do_load_snippets()            
         
