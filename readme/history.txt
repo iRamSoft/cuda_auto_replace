@@ -2,6 +2,9 @@
 + add
 * enhancement
 
+2018.08.31
++ refactored, made faster
+
 2018.08.30
 + add ignore comments/string of lexer (https://github.com/iRamSoft/cuda_auto_replace/issues/19)
 + add reload snipps operation in config menu
