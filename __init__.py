@@ -10,9 +10,10 @@ if not os.path.isfile(ini):
 opt_allow_lexers_for_config = ini_read(ini, 'op', 'lexers', '*')
 opt_allow_lexers            = opt_allow_lexers_for_config.split(',')
 #---------------------
-CHARS_BAD  = r'%*:<>?/\{|}'
-CHARS_GOOD = r'___________'
-TRANTAB    = str.maketrans(CHARS_BAD, CHARS_GOOD)
+TRANTAB = str.maketrans(
+    r'%*:<>?/\{|}',
+    r'___________'
+    )
 
 def is_name_listed(name, namelist):
     if not namelist: return True
@@ -39,7 +40,6 @@ def _caret_in_comment(ed_self, c_styles, caret):
 
 class Command:
     last_caret = None
-    on_key_process  = False
 
     def __init__(self):
         self.do_load_snippets()
@@ -138,16 +138,13 @@ class Command:
         self.last_caret = ed_self.get_carets()[0]
 
     def on_key(self, ed_self, key, state):
-        #Tab=9 Enter=13 PgUp=33 PgDn=34 End=35 Home=36
-        if key not in [9,13,33,34,35,36]: return
-        if state!='': return
-        if not self._checks(ed_self): return
-        if self.on_key_process:
-            print('Dbl on_key hooked!')
+        # key is checked via install.inf
+        if state: return
+        if not self._checks(ed_self):
+            #print('on_key not check')
             return
-        self.on_key_process = True
+        #print('on_key for caret:', self.last_caret)
         self.replace_word_under_caret(ed_self, self.last_caret)
-        self.on_key_process = False
 
     def on_click(self, ed_self, state):
         if not self._checks(ed_self): return
