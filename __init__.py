@@ -121,9 +121,9 @@ class Command:
     def get_item_for_replace(self, word):
         if not word: return  
         items = self.get_snip_list_current() #leave snips for lexer
-        items = [i for i in items if i[SNIP_NAME]==word.lower() and i[SNIP_TEXT][0]!=word] #leave snips for name
+        items = [i for i in items if i[0]==word.lower() and i[1]!=word] #leave snips for name
         if not items: return
-        return items[0][SNIP_TEXT][0] 
+        return items[0][1] 
 
     def replace_word_under_caret(self, ed_self, caret=None):
         word, len0, len1  = get_changed_word_from_editor(ed_self, caret)
