@@ -138,12 +138,11 @@ class Command:
         self.last_caret = ed_self.get_carets()[0]
 
     def on_key(self, ed_self, key, state):
-        #Tab=9 Enter=13 PgUp=33 PgDn=34 End=35 Home=36
-        if key not in [9,13,33,34,35,36]: return
-        if state!='': return
+        ### key is checked via install.inf
+        #if key not in [9,13,33,34,35,36]: return
+        if state: return
         if not self._checks(ed_self): return
         if self.on_key_process:
-            print('Dbl on_key hooked!')
             return
         self.on_key_process = True
         self.replace_word_under_caret(ed_self, self.last_caret)
