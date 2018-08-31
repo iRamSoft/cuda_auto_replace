@@ -38,7 +38,7 @@ def _caret_in_comment(ed_self, c_styles, caret):
             return is_a_comment(tkn['style'], c_styles)
 
 class Command:
-    last_carret_pos = None
+    last_caret = None
     on_key_process  = False
 
     def __init__(self):
@@ -52,8 +52,8 @@ class Command:
         if not self.snips.get(lexer.lower()): return
 
         if _caret_in_comment(ed_self, self.lexer_prop.get(lexer.lower(), []),
-            self.last_carret_pos if self.last_carret_pos else ed_self.get_carets()[0]):
-            self.last_carret_pos = ed_self.get_carets()[0]
+            self.last_caret if self.last_caret else ed_self.get_carets()[0]):
+            self.last_caret = ed_self.get_carets()[0]
             return
 
         return True
@@ -129,13 +129,13 @@ class Command:
 
     def on_insert(self, ed_self, text):
         if not self._checks(ed_self): return
-        self.last_carret_pos = ed_self.get_carets()[0]
+        self.last_caret = ed_self.get_carets()[0]
         self.replace_last_word(ed_self, text)
 
     def on_change(self, ed_self):
         if not self._checks(ed_self): return
         self.replace_word_under_caret(ed_self)
-        self.last_carret_pos = ed_self.get_carets()[0]
+        self.last_caret = ed_self.get_carets()[0]
 
     def on_key(self, ed_self, key, state):
         #Tab=9 Enter=13 PgUp=33 PgDn=34 End=35 Home=36
@@ -146,14 +146,14 @@ class Command:
             print('Dbl on_key hooked!')
             return
         self.on_key_process = True
-        self.replace_word_under_caret(ed_self, self.last_carret_pos)
+        self.replace_word_under_caret(ed_self, self.last_caret)
         self.on_key_process = False
 
     def on_click(self, ed_self, state):
         if not self._checks(ed_self): return
-        if self.last_carret_pos != ed_self.get_carets()[0]:
-            self.replace_word_under_caret(ed_self, self.last_carret_pos)
-        self.last_carret_pos = ed_self.get_carets()[0]
+        if self.last_caret != ed_self.get_carets()[0]:
+            self.replace_word_under_caret(ed_self, self.last_caret)
+        self.last_caret = ed_self.get_carets()[0]
 
     def config(self):
         global opt_allow_lexers
