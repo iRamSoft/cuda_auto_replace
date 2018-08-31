@@ -69,8 +69,8 @@ class Command:
         else:
             lexers_all = opt_allow_lexers
         
+        dir = os.path.join(app_path(APP_DIR_DATA), 'autoreplace')
         for lex in lexers_all:
-            dir = os.path.join(app_path(APP_DIR_DATA), 'autoreplace')
             d = get_snips_for_lexer(dir, get_lexer_dir(lex.lower()))
             if d:
                 self.snips[lex.lower()] = d 
