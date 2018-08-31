@@ -10,19 +10,19 @@ if not os.path.isfile(ini):
 opt_allow_lexers_for_config = ini_read(ini, 'op', 'lexers', '*')
 opt_allow_lexers            = opt_allow_lexers_for_config.split(',')
 #---------------------
-bad_chars  = '~"#%&*:<>?/\\{|}.'
-good_chars = '________________'
-trantab    = str.maketrans(bad_chars, good_chars)
+CHARS_BAD  = '~"#%&*:<>?/\\{|}.'
+CHARS_GOOD = '________________'
+TRANTAB    = str.maketrans(CHARS_BAD, CHARS_GOOD)
 
 def is_name_listed(name, namelist):
     if not namelist: return True
     return bool(name) and (','+name+',' in ','+namelist+',')
 
 def get_lexer_dir(lex):
-    return lex.translate(trantab)
+    return lex.translate(TRANTAB)
 
 def is_for_all_lexers():
-    return opt_allow_lexers == [''] or opt_allow_lexers == ['*']
+    return opt_allow_lexers in ([''], ['*'])
 
 def is_a_comment(style, c_styles):
     return style.lower() in c_styles
