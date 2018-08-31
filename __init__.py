@@ -39,7 +39,6 @@ def _caret_in_comment(ed_self, c_styles, caret):
 
 class Command:
     last_caret = None
-    on_key_process  = False
 
     def __init__(self):
         self.do_load_snippets()
@@ -138,15 +137,13 @@ class Command:
         self.last_caret = ed_self.get_carets()[0]
 
     def on_key(self, ed_self, key, state):
-        ### key is checked via install.inf
-        #if key not in [9,13,33,34,35,36]: return
+        # key is checked via install.inf
         if state: return
-        if not self._checks(ed_self): return
-        if self.on_key_process:
+        if not self._checks(ed_self):
+            #print('on_key not check')
             return
-        self.on_key_process = True
+        #print('on_key for caret:', self.last_caret)
         self.replace_word_under_caret(ed_self, self.last_caret)
-        self.on_key_process = False
 
     def on_click(self, ed_self, state):
         if not self._checks(ed_self): return
