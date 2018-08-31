@@ -3,7 +3,6 @@ import os
 import string
 
 SNIP_EXT='.cuda-snips'
-SNIP_LEX=2
 
 def isword(s):    
     return s.isalnum() or s=='_'
@@ -65,20 +64,20 @@ def get_changed_word_from_editor(ed, caret=None):
     return word, len0, len2
 
 
-def get_snip_list_of_dicts(dir, lex):
+def get_snips_for_lexer(dir, lex):
     res = []
     for root, subdirs, files in os.walk(os.path.join(dir, lex)):
         for f in files:
             if f.endswith(SNIP_EXT):
                 res.append(os.path.join(root, f))
 
-    result = []
+    r = []
     for fn in res:
         for s in open(fn, encoding='utf8').read().splitlines():
             if s and s[0] not in ('#', ' '):
                 #print('s', '"'+s+'"')
                 w = s.split(' ')
                 if len(w)==2:
-                    result += [ (w[0], w[1], lex) ]
+                    r.append(w)
     
-    return sorted(result)
+    return sorted(r)
