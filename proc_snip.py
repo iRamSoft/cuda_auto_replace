@@ -13,7 +13,7 @@ def get_word(ed, x, y):
         return None, 0, 0
         
     s = ed.get_text_line(y)
-    if not s or x>=len(s):
+    if not s or x>len(s):
         return None, 0, 0
 
     x0 = x
