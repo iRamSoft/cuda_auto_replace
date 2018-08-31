@@ -10,8 +10,8 @@ if not os.path.isfile(ini):
 opt_allow_lexers_for_config = ini_read(ini, 'op', 'lexers', '*')
 opt_allow_lexers            = opt_allow_lexers_for_config.split(',')
 #---------------------
-CHARS_BAD  = '~"#%&*:<>?/\\{|}.'
-CHARS_GOOD = '________________'
+CHARS_BAD  = r'%*:<>?/\{|}'
+CHARS_GOOD = r'___________'
 TRANTAB    = str.maketrans(CHARS_BAD, CHARS_GOOD)
 
 def is_name_listed(name, namelist):
