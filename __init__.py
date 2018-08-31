@@ -44,7 +44,7 @@ def _checks(self, ed_self):
     if len(ed_self.get_carets())!=1: return
 
     lexer = ed_self.get_prop(PROP_LEXER_FILE).lower()       
-    if self.snips_count.get(lexer.lower(), 0) == 0: return
+    if not self.snips.get(lexer.lower()): return
       
     if _caret_in_comment(ed_self, self.lexer_prop.get(lexer.lower(), []), 
         self.last_carret_pos if self.last_carret_pos else ed_self.get_carets()[0]):
@@ -62,39 +62,24 @@ class Command:
 
     def do_load_snippets(self):     
         global no_snips
-        
-        snips = []
+        self.snips = {}
+
         if is_for_all_lexers():
             lexers_all = lexer_proc(LEXER_GET_LEXERS, True)
         else:
             lexers_all = opt_allow_lexers
         
+        dir = os.path.join(app_path(APP_DIR_DATA), 'autoreplace')
         for lex in lexers_all:
-            dir = os.path.join(app_path(APP_DIR_DATA), 'autoreplace')
-            snips.extend(get_snip_list_of_dicts(dir, get_lexer_dir(lex.lower())))
+            d = get_snips_for_lexer(dir, get_lexer_dir(lex.lower()))
+            if d:
+                self.snips[lex.lower()] = d 
 
-        lexers = []
-        for d in snips:
-            s = d[SNIP_LEX]
-            if s:
-                lexers += s.split(',')  
-        lexers = sorted(list(set(lexers)))
-        
+        lexers = sorted(self.snips.keys())
         lexers_ex = [lexer for lexer in lexers_all
                      if lexer.lower() in lexers]
 
-        self.snips_sort = {}
-        self.snips_count = {}
-        for lexer in lexers_all:
-            _items = [
-                data for data in snips if
-                (data[SNIP_LEX]=='') or
-                is_name_listed(lexer.lower(), data[SNIP_LEX].lower())
-                ]
-            self.snips_sort[lexer.lower()] = _items
-            self.snips_count[lexer.lower()] = len(_items)
-
-        no_snips = len(lexers_ex) == 0
+        no_snips = not self.snips
         
         self.lexer_prop = {}
         for lexer in lexers_ex:
@@ -104,9 +89,9 @@ class Command:
             self.lexer_prop[lexer.lower()] = s_c_list
 
         if no_snips:
-            log_msg = 'Auto Replace: not found any snippets for work.'
+            log_msg = 'Auto Replace: no snippets to work'
         else:
-            msgs = ['{}[{}]'.format(lexer, self.snips_count.get(lexer.lower(), 0)) for lexer in lexers_ex]
+            msgs = ['{}[{}]'.format(lexer, len(self.snips.get(lexer.lower(), []))) for lexer in lexers_ex]
             if is_for_all_lexers(): 
                 log_msg = 'Auto Replace: for all lexers, found: ' + ', '.join(msgs)
             else:
@@ -116,7 +101,7 @@ class Command:
 
     def get_snip_list_current(self):
         lexer = ed.get_prop(PROP_LEXER_CARET).lower()
-        return self.snips_sort.get(lexer, [])
+        return self.snips.get(lexer, [])
 
     def get_item_for_replace(self, word):
         if not word: return  
