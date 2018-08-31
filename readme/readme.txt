@@ -13,7 +13,7 @@ note that [CudaText dir] on Unix is "~/.cudatext".
 note that you need subfolder in the lower case inside "data/autoreplace" folder.
 plugin prints in the Console panel, that it actually has found some snippets, e.g. "Auto Replace: for all lexers: found Pascal[5]".
 such snippet collections can be distributed as CudaText add-ons.
-plugin gives configuration menu item: Options / Settings-plugins / Auto Replace / Config.
+plugin gives configuration menu item(s): "Options / Settings-plugins / Auto Replace".
 
 authors:
   Alexey T. (CudaText)
