@@ -8,19 +8,25 @@ def isword(s):
     return s.isalnum() or s=='_'
 
 def get_word(ed, x, y):
-    if x==0: return None, 0, 0
+
+    if x<=0:
+        return None, 0, 0
+        
+    s = ed.get_text_line(y)
+    if not s or x>=len(s):
+        return None, 0, 0
 
     x0 = x
-    while (x0>0) and isword(ed.get_text_substr(x0-1, y, x0, y)):
-        x0-=1
-    text1 = ed.get_text_substr(x0, y, x, y)
+    while (x0>0) and isword(s[x0-1]):
+        x0 -= 1
+    s1 = s[x0:x]
 
-    x0 = x
-    while isword(ed.get_text_substr(x0, y, x0+1, y)):
-        x0+=1
-    text2 = ed.get_text_substr(x, y, x0, y)
+    x1 = x
+    while (x1<len(s)) and isword(s[x1]):
+        x1 += 1
+    s2 = s[x:x1]
 
-    return text1 + text2, len(text1), len(text2)
+    return s1+s2, len(s1), len(s2)
 
 def _curent_word():
     s = ed.get_text_sel()
