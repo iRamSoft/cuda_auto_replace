@@ -28,17 +28,6 @@ def get_word(ed, x, y):
 
     return s1+s2, len(s1), len(s2)
 
-def _curent_word():
-    s = ed.get_text_sel()
-    nlen = len(s)
-    if nlen <= 0:
-        carets = ed.get_carets()
-        if len(carets)!=1: return
-        x0, y0, x1, y1 = carets[0]
-        return         
-    else:
-        return ed.get_text_sel()
-
 
 def get_last_word_from_editor(ed, char):
     if isword(char): return
