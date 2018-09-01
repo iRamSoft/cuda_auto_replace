@@ -99,14 +99,14 @@ class Command:
         return self.snips.get(lexer, [])
 
     def get_item_for_replace(self, word):
-        if not word: return
         items = self.get_snip_list_current() #leave snips for lexer
         items = [i for i in items if i[0]==word.lower() and i[1]!=word] #leave snips for name
-        if not items: return
-        return items[0][1]
+        if items:
+            return items[0][1]
 
     def replace_word_under_caret(self, ed_self, caret=None):
         word, len0, len1  = get_changed_word_from_editor(ed_self, caret)
+        if not word: return
 #       print('word', word)
         rp_text = self.get_item_for_replace(word)
 #       print('rp_text', rp_text)
@@ -119,6 +119,7 @@ class Command:
 
     def replace_last_word(self, ed_self, text):
         word = get_last_word_from_editor(ed_self, text)
+        if not word: return
 #       print('word', word)
         rp_text = self.get_item_for_replace(word)
 #       print('rp_text', rp_text)
