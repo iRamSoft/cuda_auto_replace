@@ -12,8 +12,8 @@ events=on_change,on_click,on_insert,on_start
 [item2]
 section=events
 events=on_key
-keys=9,13,33,34,35,36
-; Tab, Enter, Home, End, PageUp, PageDown
+keys=9,13,33,34,35,36,38,40
+; Tab, Enter, Home, End, PageUp, PageDown, Up, Down
 
 [item10]
 section=commands
