@@ -100,7 +100,7 @@ class Command:
 
     def get_item_for_replace(self, word):
         items = self.get_snip_list_current() #leave snips for lexer
-        items = [i for i in items if i[0]==word.lower() and i[1]!=word] #leave snips for name
+        items = [i for i in items if i[0].lower()==word.lower() and i[1]!=word] #leave snips for name
         if items:
             return items[0][1]
 
