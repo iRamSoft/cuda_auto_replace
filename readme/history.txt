@@ -2,6 +2,9 @@
 + add
 * enhancement
 
+2018.09.28
+* changed storage of snippets, now it's *.cuda-dic files with simple word per line (before was 2 words)
+
 2018.08.31
 + refactored, made faster
 
