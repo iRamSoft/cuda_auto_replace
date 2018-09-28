@@ -1,11 +1,10 @@
 plugin for CudaText.
-allows to auto-replace keywords/functions, when they are typed in the wrong case (e.g. "writeln" to "WriteLn"). allows usual word replace too. to use it, you must create one or several snippet collection(s) in .cuda-snips format:
-http://wiki.freepascal.org/CudaText#Format_of_.cuda-snips
+allows to auto-replace keywords/functions, when they are typed in the wrong case (e.g. "writeln" to "WriteLn"). allows usual word replace too. you must create one or several snippet collection(s) in .cuda-dic format: one word per line, comments must begin with # char.
 
-for ex, to replace words "readln" and "writeln" in lexer Pascal, create file "[CudaText dir]/data/autoreplace/pascal/mysnips.cuda-snips" with contents:
+for ex, to replace words "readln" and "writeln" in lexer Pascal, create file "[CudaText dir]/data/autoreplace/pascal/mytest.cuda-dic" with contents:
 
-writeln WriteLn
-readln ReadLn
+WriteLn
+ReadLn
 
 word is replaced when user goes off this word: by Space, Tab, symbol chars, punctuation, Home/End, PageUp/PageDown, mouse click.
 
@@ -17,5 +16,5 @@ plugin gives configuration menu item(s): "Options / Settings-plugins / Auto Repl
 
 authors:
   Alexey T. (CudaText)
-  Khomutov Roman (iRamSoft)
+  Khomutov Roman (iRamSoft on Github)
 license: MIT
