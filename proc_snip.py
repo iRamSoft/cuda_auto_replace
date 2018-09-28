@@ -2,7 +2,7 @@ import sys
 import os
 import string
 
-SNIP_EXT='.cuda-snips'
+SNIP_EXT='.cuda-dic'
 
 def isword(s):    
     return s.isalnum() or s=='_'
@@ -69,10 +69,7 @@ def get_snips_for_lexer(dir, lex):
     r = []
     for fn in res:
         for s in open(fn, encoding='utf8').read().splitlines():
-            if s and s[0] not in ('#', ' '):
-                #print('s', '"'+s+'"')
-                w = s.split(' ')
-                if len(w)==2:
-                    r.append(w)
+            if s and not s.startswith('#'):
+                r.append(s)
     
     return sorted(r)
